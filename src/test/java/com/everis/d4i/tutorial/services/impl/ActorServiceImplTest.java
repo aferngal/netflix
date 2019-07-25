@@ -63,10 +63,8 @@ public class ActorServiceImplTest {
 		final Map<TvShowRest, Set<SeasonRest>> tvShowSeasonMap = new HashMap<>(); // TvShowRest - Set SeasonRest
 		final Map<SeasonRest, List<ChapterRest>> seasonChaptersMap = new HashMap<>();
 		final ChapterActor chapterActor1 = new ChapterActor();
-		final ChapterActor chapterActor2 = new ChapterActor();
 		final List<ChapterActor> chapterActorList = new ArrayList<>();
 		chapterActorList.add(chapterActor1);
-		chapterActorList.add(chapterActor2);
 		actor.setChapterActor(chapterActorList);
 		// final ActorRest actorRest = new ActorRest();
 
@@ -89,9 +87,8 @@ public class ActorServiceImplTest {
 		final ActorRest actorRest = actorService.getActorById(id);
 
 		// then
-		// assertThat(actorRest2.getId()).isEqualTo(id);
 		assertThat(actorRest.getId()).isEqualTo(id);
-		assertThat(actor.getChapterActor()).contains(chapterActor1, chapterActor2);
+		assertThat(actor.getChapterActor()).contains(chapterActor1);
 
 	}
 	

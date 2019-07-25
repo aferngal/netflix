@@ -61,6 +61,7 @@ public class ActorServiceImpl implements ActorService {
 		});
 
 		final ActorRest actorRest = new ActorRest();
+		actorRest.setId(actor.getId());
 		actorRest.setName(actor.getName());
 		actorRest.setSurname(actor.getSurname());
 		actorRest.setDayOfBirth(actor.getDayOfBirth());
