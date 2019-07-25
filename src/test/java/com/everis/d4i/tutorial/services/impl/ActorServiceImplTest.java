@@ -52,7 +52,7 @@ public class ActorServiceImplTest {
 
 	@Test
 	public void getActorById() throws NetflixException {
-		//given
+		// given
 		final long id = 1L;
 		final Actor actor = new Actor();
 		final TvShow tvShow = new TvShow();
@@ -61,35 +61,38 @@ public class ActorServiceImplTest {
 		final SeasonRest seasonRest = new SeasonRest();
 		final Chapter chapter = new Chapter();
 		final ChapterRest chapterRest = new ChapterRest();
-		
-		final List<ChapterRest> chapterRestList = new ArrayList<>();
-		final List<SeasonRest> seasonRestList = new ArrayList<>();
-		final List<TvShowRest> tvShowRestList = new ArrayList<>();
-		
 		final Map<TvShowRest, Set<SeasonRest>> tvShowSeasonMap = new HashMap<>(); // TvShowRest - Set SeasonRest
-		final Map<SeasonRest, List<ChapterRest>> seasonChaptersMap = new HashMap<>();		
-		
+		final Map<SeasonRest, List<ChapterRest>> seasonChaptersMap = new HashMap<>();
+		final ChapterActor chapterActor1 = new ChapterActor();
+		final ChapterActor chapterActor2 = new ChapterActor();
+		final List<ChapterActor> chapterActorList = new ArrayList<>();
+		chapterActorList.add(chapterActor1);
+		chapterActorList.add(chapterActor2);
+		actor.setChapterActor(chapterActorList);
+		// final ActorRest actorRest = new ActorRest();
+
+		actor.setId(id);
+		// chapterActor.setActor(actor);
+		// chapterActor.setChapter(chapter);
+		chapter.setSeason(season);
+		season.setTvShow(tvShow);
+		chapterActor1.setChapter(chapter);
+		tvShowSeasonMap.computeIfAbsent(tvShowRest, k -> new HashSet<>()).add(seasonRest);
+		seasonChaptersMap.computeIfAbsent(seasonRest, k -> new ArrayList<>()).add(chapterRest);
+
 		Mockito.when(actorRepository.findById(id)).thenReturn(Optional.of(actor));
 		Mockito.when(modelMapper.map(tvShow, TvShowRest.class)).thenReturn(tvShowRest);
 		Mockito.when(modelMapper.map(season, SeasonRest.class)).thenReturn(seasonRest);
 		Mockito.when(modelMapper.map(chapter, ChapterRest.class)).thenReturn(chapterRest);
-		chapter.setSeason(season);
-		season.setTvShow(tvShow);		
-		
-		tvShowSeasonMap.computeIfAbsent(tvShowRest, k -> new HashSet<>()).add(seasonRest);
-		seasonChaptersMap.computeIfAbsent(seasonRest, k -> new ArrayList<>()).add(chapterRest);
-		
-		chapterRestList.add(chapterRest);
-		seasonRest.setChapters(chapterRestList);
-		seasonRestList.add(seasonRest);
-		tvShowRest.setSeasons(seasonRestList);
-		tvShowRestList.add(tvShowRest);	
-		
-		//when
+		// Mockito.when(modelMapper.map(actor, ActorRest.class)).thenReturn(actorRest);
+
+		// when
 		final ActorRest actorRest = actorService.getActorById(id);
-		
-		//then
-		assertThat(actorRest.getTvShows()).isEqualTo(tvShowRestList);
+
+		// then
+		// assertThat(actorRest2.getId()).isEqualTo(id);
+		assertThat(actorRest.getId()).isEqualTo(id);
+		assertThat(actor.getChapterActor()).contains(chapterActor1, chapterActor2);
 
 	}
 	
