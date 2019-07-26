@@ -3,12 +3,8 @@ package com.everis.d4i.tutorial.services.impl;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -24,7 +20,6 @@ import com.everis.d4i.tutorial.entities.Chapter;
 import com.everis.d4i.tutorial.entities.ChapterActor;
 import com.everis.d4i.tutorial.entities.Season;
 import com.everis.d4i.tutorial.entities.TvShow;
-import com.everis.d4i.tutorial.exceptions.InternalServerErrorException;
 import com.everis.d4i.tutorial.exceptions.NetflixException;
 import com.everis.d4i.tutorial.exceptions.NotFoundException;
 import com.everis.d4i.tutorial.json.ActorRest;
@@ -60,28 +55,25 @@ public class ActorServiceImplTest {
 		final SeasonRest seasonRest = new SeasonRest();
 		final Chapter chapter = new Chapter();
 		final ChapterRest chapterRest = new ChapterRest();
-		final Map<TvShowRest, Set<SeasonRest>> tvShowSeasonMap = new HashMap<>(); // TvShowRest - Set SeasonRest
-		final Map<SeasonRest, List<ChapterRest>> seasonChaptersMap = new HashMap<>();
 		final ChapterActor chapterActor1 = new ChapterActor();
 		final List<ChapterActor> chapterActorList = new ArrayList<>();
+		final List<TvShowRest> tvShowList = new ArrayList<>();
 		chapterActorList.add(chapterActor1);
 		actor.setChapterActor(chapterActorList);
-		// final ActorRest actorRest = new ActorRest();
 
 		actor.setId(id);
-		// chapterActor.setActor(actor);
-		// chapterActor.setChapter(chapter);
+
 		chapter.setSeason(season);
 		season.setTvShow(tvShow);
 		chapterActor1.setChapter(chapter);
-		tvShowSeasonMap.computeIfAbsent(tvShowRest, k -> new HashSet<>()).add(seasonRest);
-		seasonChaptersMap.computeIfAbsent(seasonRest, k -> new ArrayList<>()).add(chapterRest);
 
 		Mockito.when(actorRepository.findById(id)).thenReturn(Optional.of(actor));
 		Mockito.when(modelMapper.map(tvShow, TvShowRest.class)).thenReturn(tvShowRest);
 		Mockito.when(modelMapper.map(season, SeasonRest.class)).thenReturn(seasonRest);
 		Mockito.when(modelMapper.map(chapter, ChapterRest.class)).thenReturn(chapterRest);
-		// Mockito.when(modelMapper.map(actor, ActorRest.class)).thenReturn(actorRest);
+
+		seasonRest.getChapters().add(chapterRest);
+		tvShowRest.getSeasons().add(seasonRest);
 
 		// when
 		final ActorRest actorRest = actorService.getActorById(id);
@@ -89,23 +81,21 @@ public class ActorServiceImplTest {
 		// then
 		assertThat(actorRest.getId()).isEqualTo(id);
 		assertThat(actor.getChapterActor()).contains(chapterActor1);
-
 	}
-	
+
 	@Test(expected = NotFoundException.class)
 	public void getActorByIdNotFoundException() throws NetflixException {
-		// given	
+		// given
 		final ActorRest actorRest = new ActorRest();
-		
+
 		Mockito.when(actorRepository.findById(actorRest.getId())).thenReturn(Optional.empty());
-		
+
 		// when
 		actorService.getActorById(actorRest.getId());
 
 		// then
 
 	}
-
 
 	@Test
 	public void getActors() throws NetflixException {
@@ -123,7 +113,6 @@ public class ActorServiceImplTest {
 
 		// then
 		assertThat(actorRestList).contains(actorRest);
-		// assertThat(actorRestList.get(0).getName()).isEqualTo("Buffoonery");
 	}
 
 	@Test
@@ -154,32 +143,19 @@ public class ActorServiceImplTest {
 	@Test
 	public void createActor() throws NetflixException {
 		final ActorRest actorRest = new ActorRest();
-		actorRest.setName("Pepe");
-		actorRest.setSurname("Colubi");
 		final Actor actorInput = new Actor();
+		final Actor actorOutput = new Actor();
+		final ActorRest actorRestOut = new ActorRest();
 
 		Mockito.when(modelMapper.map(actorRest, Actor.class)).thenReturn(actorInput);
-		actorRepository.save(actorInput);
+		Mockito.when(actorRepository.save(actorInput)).thenReturn(actorOutput);
+		Mockito.when(modelMapper.map(actorOutput, ActorRest.class)).thenReturn(actorRestOut);
 
 		// when
-		final ActorRest actorOutput = actorService.createActor(actorRest);
+		final ActorRest actorRestOutput = actorService.createActor(actorRest);
 
 		// then
-		assertThat(actorOutput).isSameAs(actorRest);
-
-	}
-
-	@Test(expected = InternalServerErrorException.class)
-	public void createActorThrowsInternalServerErrorException() throws NetflixException {
-		final ActorRest actorRest = new ActorRest();
-		// final Actor actorInput = new Actor();
-		actorRest.setId(1L);
-		Mockito.when(actorRepository.existsById(actorRest.getId())).thenReturn(true);
-
-		// when
-		actorService.createActor(actorRest);
-
-		// then
+		assertThat(actorRestOutput).isSameAs(actorRestOut);
 
 	}
 
@@ -221,18 +197,16 @@ public class ActorServiceImplTest {
 		actorService.deleteActor(id);
 
 		// then
-		//assertThat(actorRest2.getId()).isEqualTo(actor.getId());
 		assertThat(!actorRepository.existsById(id));
 	}
-	
+
 	@Test(expected = NotFoundException.class)
 	public void alterActorNotFoundException() throws NetflixException {
 		// given
-		//final long id = 8L;
+
 		final ActorRest actorRest = new ActorRest();
 
 		Mockito.when(actorRepository.findById(actorRest.getId())).thenReturn(Optional.empty());
-		
 
 		// when
 		actorService.alterActor(actorRest);
@@ -247,8 +221,6 @@ public class ActorServiceImplTest {
 		final long id = 8L;
 
 		Mockito.when(actorRepository.findById(id)).thenReturn(Optional.empty());
-		// Mockito.when(modelMapper.map(actor, ActorRest.class)).thenThrow(new
-		// NotFoundException(ExceptionConstants.MESSAGE_INEXISTENT_ACTOR));
 
 		// when
 		actorService.deleteActor(id);

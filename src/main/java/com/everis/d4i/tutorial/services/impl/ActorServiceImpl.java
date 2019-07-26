@@ -9,13 +9,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.everis.d4i.tutorial.entities.Actor;
-import com.everis.d4i.tutorial.exceptions.InternalServerErrorException;
 import com.everis.d4i.tutorial.exceptions.NetflixException;
 import com.everis.d4i.tutorial.exceptions.NotFoundException;
 import com.everis.d4i.tutorial.json.ActorRest;
@@ -29,7 +26,8 @@ import com.everis.d4i.tutorial.utils.constants.ExceptionConstants;
 @Service
 public class ActorServiceImpl implements ActorService {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(CategoryServiceImpl.class);
+	// private static final Logger LOGGER =
+	// LoggerFactory.getLogger(CategoryServiceImpl.class);
 
 	@Autowired
 	private ActorRepository actorRepository;
@@ -44,8 +42,7 @@ public class ActorServiceImpl implements ActorService {
 
 	@Override
 	public ActorRest getActorById(final Long id) throws NetflixException {
-		final Actor actor = actorRepository.findById(id)
-				.orElseThrow(() -> new NotFoundException(ExceptionConstants.MESSAGE_INEXISTENT_ACTOR));
+		final Actor actor = getActor(id);
 
 		final Map<TvShowRest, Set<SeasonRest>> tvShowSeasonMap = new HashMap<>(); // TvShowRest - Set SeasonRest
 		final Map<SeasonRest, List<ChapterRest>> seasonChaptersMap = new HashMap<>(); // SeasonRest - List ChapterRest
@@ -68,9 +65,9 @@ public class ActorServiceImpl implements ActorService {
 		final List<TvShowRest> tvShowList = new ArrayList<>();
 
 		// recorro las series del map
-		for (TvShowRest tvShow : tvShowSeasonMap.keySet()) {
+		for (final TvShowRest tvShow : tvShowSeasonMap.keySet()) {
 			// recorro las temporadas de las series del map
-			for (SeasonRest season : tvShow.getSeasons()) {
+			for (final SeasonRest season : tvShow.getSeasons()) {
 				// utilizo la temporada como clave para buscar en el otro map los chapters
 				season.setChapters(seasonChaptersMap.get(season));
 			}
@@ -92,14 +89,8 @@ public class ActorServiceImpl implements ActorService {
 
 	@Override
 	public ActorRest createActor(final ActorRest actorRest) throws NetflixException {
-		if (actorRepository.existsById(actorRest.getId())) {
-			LOGGER.error(ExceptionConstants.MESSAGE_EXISTENT_ACTOR, "Actor ya existe");
-			throw new InternalServerErrorException(ExceptionConstants.MESSAGE_EXISTENT_ACTOR);
-		}
 		final Actor actor = modelMapper.map(actorRest, Actor.class);
-		actorRepository.save(actor);
-
-		return actorRest;
+		return modelMapper.map(actorRepository.save(actor), ActorRest.class);
 	}
 
 	@Override
@@ -117,11 +108,15 @@ public class ActorServiceImpl implements ActorService {
 
 	@Override
 	public ActorRest deleteActor(final Long id) throws NetflixException {
-		final Actor actor = actorRepository.findById(id)
-				.orElseThrow(() -> new NotFoundException(ExceptionConstants.MESSAGE_INEXISTENT_ACTOR));
+		final Actor actor = getActor(id);
 
 		actorRepository.delete(actor);
 		return modelMapper.map(actor, ActorRest.class);
 
+	}
+
+	private Actor getActor(final Long id) throws NotFoundException {
+		return actorRepository.findById(id)
+				.orElseThrow(() -> new NotFoundException(ExceptionConstants.MESSAGE_INEXISTENT_ACTOR));
 	}
 }

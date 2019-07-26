@@ -53,15 +53,15 @@ public class ActorControllerImpl implements ActorController {
 	@Override
 	@ResponseStatus(HttpStatus.OK)
 	@GetMapping(value = RestConstants.RESOURCE_CHAPTER_ID, produces = MediaType.APPLICATION_JSON_VALUE)
-	public NetflixResponse<List<ActorRest>> getActorsByChapter(final Long tvShowId, final short seasonNumber, final short chapterNumber)
-			throws NetflixException {
+	public NetflixResponse<List<ActorRest>> getActorsByChapter(final Long tvShowId, final short seasonNumber,
+			final short chapterNumber) throws NetflixException {
 
 		return new NetflixResponse<>(CommonConstants.SUCCESS, String.valueOf(HttpStatus.OK), CommonConstants.OK,
 				actorService.getActorsByChapter(tvShowId, seasonNumber, chapterNumber));
 	}
 
 	@Override
-	@ResponseStatus(HttpStatus.OK)
+	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping(produces = MediaType.APPLICATION_JSON_VALUE)
 	public NetflixResponse<ActorRest> createActor(
 			@ApiParam(value = RestConstants.PARAMETER_ACTOR, required = true) @RequestBody @Valid final ActorRest actorRest)
@@ -83,7 +83,7 @@ public class ActorControllerImpl implements ActorController {
 	}
 
 	@Override
-	@ResponseStatus(HttpStatus.OK)
+	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@DeleteMapping(value = RestConstants.RESOURCE_ID, produces = MediaType.APPLICATION_JSON_VALUE)
 	public NetflixResponse<ActorRest> deleteActor(@PathVariable final Long id) throws NetflixException {
 
