@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 import com.everis.d4i.tutorial.entities.Award;
 import com.everis.d4i.tutorial.entities.TvShow;
@@ -27,12 +28,19 @@ public class TvShowServiceImpl implements TvShowService {
 	@Autowired
 	private ModelMapper modelMapper;
 
+	final RestTemplate restTemplate = new RestTemplate();
+	final String url = "http://localhost:8181/film-info/film/";
+
 	@Override
 	public List<TvShowRest> getTvShowsByCategory(final Long categoryId) throws NetflixException {
 
-		return tvShowRepository.findByCategoriesTvShowsCategoryId(categoryId).stream()
+		final List<TvShowRest> tvShowRestList = tvShowRepository.findByCategoriesTvShowsCategoryId(categoryId).stream()
 				.map(tvShow -> modelMapper.map(tvShow, TvShowRest.class)).collect(Collectors.toList());
 
+		tvShowRestList.forEach(tvShow -> tvShow
+				.setRate(restTemplate.getForObject(url + tvShow.getName(), TvShowRest.class).getRate()));
+
+		return tvShowRestList;
 	}
 
 	@Override
@@ -50,6 +58,7 @@ public class TvShowServiceImpl implements TvShowService {
 		final TvShowRest tvShowRest = modelMapper.map(tvShow, TvShowRest.class);
 
 		tvShowRest.setTvShowsAwards(awardRestList);
+		tvShowRest.setRate(restTemplate.getForObject(url + tvShowRest.getName(), TvShowRest.class).getRate());
 
 		return tvShowRest;
 

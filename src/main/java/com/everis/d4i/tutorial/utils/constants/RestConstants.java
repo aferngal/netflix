@@ -18,9 +18,9 @@ public class RestConstants {
 	public static final String RESOURCE_CHAPTER_BY_ACTOR = "/chapter/{actorId}";
 	public static final String RESOURCE_TV_SHOW_CHAPTER_BY_ACTOR = "/tv-shows/chapters/{actorId}";
 	public static final String RESOURCE_NUMBER = "/{number}";
-	public static final String RESOURCE_UPDATE_ACTOR = "/update/{id}";
-	public static final String RESOURCE_DELETE_ACTOR = "/delete/{id}";
-	
+//	public static final String RESOURCE_UPDATE_ACTOR = "/update/{id}";
+//	public static final String RESOURCE_DELETE_ACTOR = "/delete/{id}";
+
 	public static final String PARAMETER_CATEGORY = "categories";
 	public static final String PARAMETER_ACTOR = "actors";
 

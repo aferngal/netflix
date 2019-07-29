@@ -57,7 +57,6 @@ public class ActorServiceImplTest {
 		final ChapterRest chapterRest = new ChapterRest();
 		final ChapterActor chapterActor1 = new ChapterActor();
 		final List<ChapterActor> chapterActorList = new ArrayList<>();
-		final List<TvShowRest> tvShowList = new ArrayList<>();
 		chapterActorList.add(chapterActor1);
 		actor.setChapterActor(chapterActorList);
 
