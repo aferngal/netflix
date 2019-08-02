@@ -19,7 +19,7 @@ public class TvShowRest implements Serializable {
 	private Year year;
 	private byte recommendedAge;
 	private double rate;
-	// private CategoryRest category;
+	private double userRate;
 	private String advertising;
 	private List<SeasonRest> seasons = new ArrayList<>();
 	private List<AwardRest> tvShowsAwards = new ArrayList<>();
@@ -78,6 +78,14 @@ public class TvShowRest implements Serializable {
 
 	public void setRate(final double rate) {
 		this.rate = rate;
+	}
+
+	public double getUserRate() {
+		return userRate;
+	}
+
+	public void setUserRate(final double userRate) {
+		this.userRate = userRate;
 	}
 
 	/*

@@ -36,6 +36,12 @@ public class TvShowServiceImplTest {
 	@InjectMocks
 	TvShowServiceImpl tvShowService;
 
+	@Mock
+	private TvShowInfoImpl tvShowInfo;
+
+	@Mock
+	private TvShowInfoFeignServiceImpl tvShowInfoFeign;
+
 	@Before
 	public void setUp() throws Exception {
 	}
@@ -57,6 +63,8 @@ public class TvShowServiceImplTest {
 		Mockito.when(tvShowRepository.findByCategoriesTvShowsCategoryId(categoryId)).thenReturn(tvShowList);
 		Mockito.when(modelMapper.map(tvShow1, TvShowRest.class)).thenReturn(tvShowRest1);
 		Mockito.when(modelMapper.map(tvShow2, TvShowRest.class)).thenReturn(tvShowRest2);
+		tvShowRest1.setRate(tvShowInfo.getTvShowRate(tvShowRest1));
+		tvShowRest1.setUserRate(tvShowInfoFeign.getTvShowUserRate(tvShowRest1.getName()));
 
 		// when
 		final List<TvShowRest> tvShowRestList = tvShowService.getTvShowsByCategory(categoryId);
@@ -93,7 +101,7 @@ public class TvShowServiceImplTest {
 		Mockito.when(modelMapper.map(tvShow, TvShowRest.class)).thenReturn(tvShowRest);
 
 		// when
-		TvShowRest tvShowRestFinal = tvShowService.getTvShowById(id);
+		final TvShowRest tvShowRestFinal = tvShowService.getTvShowById(id);
 
 		// then
 		assertThat(tvShowRestFinal).isSameAs(tvShowRest);
@@ -102,13 +110,38 @@ public class TvShowServiceImplTest {
 
 	@Test(expected = NotFoundException.class)
 	public void getTvShowByIdKO() throws NetflixException {
-
 		// given
 		final long id = 1L;
+		// final Category category = new Category();
+		// final CategoryRest categoryRest = new CategoryRest();
+		// categoryRest.setId(id);
 		Mockito.when(tvShowRepository.findById(id)).thenReturn(Optional.empty());
+		// Mockito.when(modelMapper.map(category,
+		// CategoryRest.class)).thenReturn(categoryRest);
 
 		// when
 		tvShowService.getTvShowById(id);
+
+		// then
+		// assertThat(categoryRest2.getId()).isEqualTo(id);
+
+	}
+
+	@Test
+	public void getTvShowsByCategoryRateNotFound() throws NetflixException {
+
+		// given
+		final TvShowRest tvShowRest1 = new TvShowRest();
+		tvShowRest1.setName(null);
+
+		// Mockito.when(tvShowInfo.getTvShowRate(Mockito.any(TvShowRest.class)))
+		// .thenThrow(Mockito.mock(NetflixException.class));
+
+		// when
+		tvShowService.getTvShowsByCategory(1L);
+		// assertThatThrownBy(() -> tvShowInfo.getTvShowRate(null)).isEqualTo(ex);
+		// Assertions.assertThatThrownBy(() ->
+		// tvShowInfo.getTvShowRate(null)).isInstanceOf(NetflixException.class);
 
 	}
 }

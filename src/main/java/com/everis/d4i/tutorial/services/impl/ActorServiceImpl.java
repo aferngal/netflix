@@ -26,9 +26,6 @@ import com.everis.d4i.tutorial.utils.constants.ExceptionConstants;
 @Service
 public class ActorServiceImpl implements ActorService {
 
-	// private static final Logger LOGGER =
-	// LoggerFactory.getLogger(CategoryServiceImpl.class);
-
 	@Autowired
 	private ActorRepository actorRepository;
 

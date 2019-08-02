@@ -1,9 +1,6 @@
 Manifest-Version: 1.0
 Implementation-Title: netflix
 Implementation-Version: 0.0.1-SNAPSHOT
-Built-By: aferngal
-Implementation-Vendor-Id: com.everis.d4i.tutorial
-Build-Jdk: 1.8.0_212
-Implementation-URL: http://maven.apache.org
+Build-Jdk-Spec: 1.8
 Created-By: Maven Integration for Eclipse
 

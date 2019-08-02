@@ -6,6 +6,10 @@ public class RestConstants {
 	public static final String API_VERSION_1 = "/v1";
 	public static final String SUCCESS = "Success";
 
+	public static final String EXTERNAL_API = "http://localhost:8181";
+	public static final String EXTERNAL_INFO = "/film-info";
+	public static final String EXTERNAL_FILM = "/film";
+
 	public static final String RESOURCE_CATEGORY = "/categories";
 	public static final String RESOURCE_ACTORS = "/actors";
 	public static final String RESOURCE_CHAPTERS_ACTORS = "/tv-shows/{tvShowId}/seasons/{seasonNumber}/chapters/{actorId}";
@@ -18,6 +22,7 @@ public class RestConstants {
 	public static final String RESOURCE_CHAPTER_BY_ACTOR = "/chapter/{actorId}";
 	public static final String RESOURCE_TV_SHOW_CHAPTER_BY_ACTOR = "/tv-shows/chapters/{actorId}";
 	public static final String RESOURCE_NUMBER = "/{number}";
+	public static final String RESOURCE_NAME = "/{name}";
 //	public static final String RESOURCE_UPDATE_ACTOR = "/update/{id}";
 //	public static final String RESOURCE_DELETE_ACTOR = "/delete/{id}";
 
