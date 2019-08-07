@@ -2,94 +2,91 @@ package com.everis.d4i.tutorial.repositories;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mapstruct.BeanMapping;
-import org.mapstruct.NullValueMappingStrategy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.everis.d4i.tutorial.config.H2JpaConfig;
 import com.everis.d4i.tutorial.entities.Actor;
-import com.everis.d4i.tutorial.entities.Chapter;
-import com.everis.d4i.tutorial.entities.ChapterActor;
-import com.everis.d4i.tutorial.entities.Season;
-import com.everis.d4i.tutorial.entities.TvShow;
 import com.everis.d4i.tutorial.exceptions.NetflixException;
 
 @RunWith(SpringRunner.class)
 @ContextConfiguration(classes = H2JpaConfig.class)
-//@DataJpaTest
-//@Transactional(propagation = Propagation.NOT_SUPPORTED)
+@Sql(scripts = "classpath:actor.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+@Transactional
 public class ActorRepositoryTest {
 
 	@Autowired
 	private ActorRepository actorRepository;
 
-	// @Autowired
-	// private JavaSeH2Memory JavaSeH2Mem;
-
 	@Test
 	public void findById() throws NetflixException {
-		// given
-		final Long id = 1L;
-		final Actor actor = new Actor();
-		actor.setId(id);
-
-		actorRepository.save(actor);
-
-		// entityManager.merge(actor);
-
 		// when
-		final Optional<Actor> actorFound = actorRepository.findById(id);
+		final Optional<Actor> actorFound = actorRepository.findById(1L);
 
 		// then
-		assertThat(actorFound.get().getId()).isEqualTo(actor.getId());
+		assertThat(actorFound).isNotEmpty();
 	}
 
-	@BeanMapping(nullValueMappingStrategy = NullValueMappingStrategy.RETURN_NULL)
 	@Test
 	public void findByChapterActorChapterSeasonTvShowIdAndChapterActorChapterSeasonNumberAndChapterActorChapterNumber()
 			throws NetflixException {
 		// given
-		final Long id = 1L;
-		final short number = 1;
-		final Actor actor = new Actor();
-		final List<Actor> actorList = new ArrayList();
-		final List<ChapterActor> chapterActorList = new ArrayList();
-		final ChapterActor chapterActor = new ChapterActor();
-		final Chapter chapter = new Chapter();
-		final Season season = new Season();
-		final TvShow tvShow = new TvShow();
-		tvShow.setId(id);
-		season.setNumber(number);
-		chapter.setNumber(number);
-
-		actorList.add(actor);
-		chapter.setSeason(season);
-		season.setTvShow(tvShow);
-		chapterActor.setActor(actor);
-		chapterActor.setChapter(chapter);
-		chapterActorList.add(chapterActor);
-		actor.setChapterActor(chapterActorList);
-		actor.setDayOfBirth("1987-05-01");
-		actor.setName("pepe");
-		actor.setSurname("ape");
-
-		// entityManager.merge(actor);
-		// entityManager.flush();
 
 		// when
-		final List<Actor> actorListFound = actorRepository
+		final List<Actor> actorList = actorRepository
 				.findByChapterActorChapterSeasonTvShowIdAndChapterActorChapterSeasonNumberAndChapterActorChapterNumber(
-						1L, number, number);
-
+						1L, (short) 1, (short) 1);
 		// then
-		assertThat(actorListFound).contains(actor);
+		assertThat(actorList).isNotEmpty();
 	}
 
+	@Test
+	public void findByChapterActorChapter_Id() throws NetflixException {
+		// given
+
+		// when
+		final List<Actor> actorList = actorRepository.findByChapterActorChapter_Id(1L);
+
+		// then
+		assertThat(actorList).isNotEmpty();
+
+	}
+
+	@Test
+	public void saveActor() throws NetflixException {
+		// given
+		final Actor newActor = new Actor();
+		// newActor.setId(2L);
+		newActor.setName("Nombre");
+		newActor.setSurname("Apellido");
+		newActor.setDayOfBirth("1980-01-01");
+
+		// when
+		final Actor actor = actorRepository.save(newActor);
+
+		// then
+		assertThat(actor).isEqualTo(newActor);
+	}
+
+	@Test
+	public void deleteActor() throws NetflixException {
+		// given
+		final long id = 1L;
+		final Optional<Actor> actor = actorRepository.findById(id);
+
+		// when
+		actorRepository.deleteById(1L);
+
+		// then
+		assertThat(actor).isNotEmpty();
+		assertThat(actorRepository.findById(id)).isEmpty();
+	}
 }

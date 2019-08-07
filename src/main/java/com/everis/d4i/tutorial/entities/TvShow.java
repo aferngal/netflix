@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -13,6 +14,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.everis.d4i.tutorial.utils.converters.YearConverter;
 
 @Entity
 @Table(name = "TV_SHOWS")
@@ -34,14 +37,15 @@ public class TvShow implements Serializable {
 	private String longDescription;
 
 	@Column(name = "YEAR")
+	@Convert(converter = YearConverter.class)
 	private Year year;
 
 	@Column(name = "RECOMMENDED_AGE")
 	private byte recommendedAge;
 
-	//@ManyToOne(fetch = FetchType.LAZY)
-	//@JoinColumn(name = "CATEGORY_ID", nullable = false)
-	//private Category category;
+	// @ManyToOne(fetch = FetchType.LAZY)
+	// @JoinColumn(name = "CATEGORY_ID", nullable = false)
+	// private Category category;
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "tvShow")
 	private List<CategoriesTvShows> categoriesTvShows;
 
@@ -50,7 +54,7 @@ public class TvShow implements Serializable {
 
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "tvShow")
 	private List<Season> seasons;
-	
+
 	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "tvShow")
 	private List<TvShowsAwards> tvShowsAwards;
 
@@ -101,15 +105,13 @@ public class TvShow implements Serializable {
 	public void setRecommendedAge(final byte recommendedAge) {
 		this.recommendedAge = recommendedAge;
 	}
-/*
-	public Category getCategory() {
-		return category;
-	}
 
-	public void setCategory(final Category category) {
-		this.category = category;
-	}
-*/
+	/*
+	 * public Category getCategory() { return category; }
+	 * 
+	 * public void setCategory(final Category category) { this.category = category;
+	 * }
+	 */
 	public String getAdvertising() {
 		return advertising;
 	}
@@ -130,7 +132,7 @@ public class TvShow implements Serializable {
 		return tvShowsAwards;
 	}
 
-	public void setTvShowsAwards(List<TvShowsAwards> tvShowsAwards) {
+	public void setTvShowsAwards(final List<TvShowsAwards> tvShowsAwards) {
 		this.tvShowsAwards = tvShowsAwards;
 	}
 
@@ -138,10 +140,10 @@ public class TvShow implements Serializable {
 		return categoriesTvShows;
 	}
 
-	public void setCategoriesTvShows(List<CategoriesTvShows> categoriesTvShows) {
+	public void setCategoriesTvShows(final List<CategoriesTvShows> categoriesTvShows) {
 		this.categoriesTvShows = categoriesTvShows;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -152,14 +154,14 @@ public class TvShow implements Serializable {
 	}
 
 	@Override
-	public boolean equals(Object obj) {
+	public boolean equals(final Object obj) {
 		if (this == obj)
 			return true;
 		if (obj == null)
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		TvShow other = (TvShow) obj;
+		final TvShow other = (TvShow) obj;
 		if (id == null) {
 			if (other.id != null)
 				return false;
@@ -171,7 +173,6 @@ public class TvShow implements Serializable {
 		} else if (!name.equals(other.name))
 			return false;
 		return true;
-	}	
-	
+	}
 
 }

@@ -1,4 +1,4 @@
-package com.everis.d4i.tutorial.repositories;
+package com.everis.d4i.tutorial.config;
 
 import java.util.Properties;
 
@@ -10,8 +10,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.jdbc.datasource.init.DatabasePopulator;
+import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
@@ -21,6 +26,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableJpaRepositories(basePackages = "com.everis.d4i.tutorial.repositories")
 @PropertySource("application.properties")
 @EnableTransactionManagement
+//@Sql(scripts = "classpath:schema.sql", executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 public class H2JpaConfig {
 
 	@Autowired
@@ -36,6 +42,13 @@ public class H2JpaConfig {
 		dataSource.setUsername(env.getProperty("spring.datasource.user"));
 		dataSource.setPassword(env.getProperty("spring.datasource.pass"));
 
+		final Resource initSchema = new ClassPathResource("schema.sql");
+		// final Resource initData = new ClassPathResource("data.sql");
+		// final DatabasePopulator databasePopulator = new
+		// ResourceDatabasePopulator(initSchema, initData);
+		final DatabasePopulator databasePopulator = new ResourceDatabasePopulator(initSchema);
+		DatabasePopulatorUtils.execute(databasePopulator, dataSource);
+
 		return dataSource;
 	}
 
@@ -49,21 +62,36 @@ public class H2JpaConfig {
 		return em;
 	}
 
+	final Properties additionalProperties() {
+		final Properties hibernateProperties = new Properties();
+
+		hibernateProperties.put("spring.jpa.hibernate.ddl-auto",
+				env.getRequiredProperty("spring.jpa.hibernate.ddl-auto"));
+
+		hibernateProperties.setProperty("spring.jpa.hibernate.use-new-id-generator-mappings",
+				env.getProperty("spring.jpa.hibernate.use-new-id-generator-mappings"));
+
+		hibernateProperties.setProperty("spring.jpa.properties.hibernate.format_sql",
+				env.getProperty("spring.jpa.properties.hibernate.format_sql"));
+
+		hibernateProperties.setProperty("spring.jpa.properties.hibernate.show_sql",
+				env.getProperty("spring.jpa.properties.hibernate.show_sql"));
+
+		hibernateProperties.setProperty("spring.jpa.database", env.getProperty("spring.jpa.database"));
+
+		// hibernateProperties.setProperty("hibernate.format_sql",
+		// env.getProperty("hibernate.format_sql"));
+
+//		hibernateProperties.setProperty("hibernate.show_sql", env.getProperty("hibernate.show_sql"));
+
+		return hibernateProperties;
+	}
+
 	@Bean
-	JpaTransactionManager transactionManager(final EntityManagerFactory entityManagerFactory) {
+	public JpaTransactionManager transactionManager(final EntityManagerFactory entityManagerFactory) {
 		final JpaTransactionManager transactionManager = new JpaTransactionManager();
 		transactionManager.setEntityManagerFactory(entityManagerFactory);
 		return transactionManager;
 	}
 
-	final Properties additionalProperties() {
-		final Properties hibernateProperties = new Properties();
-
-		// hibernateProperties.setProperty("hibernate.hbm2ddl.auto",
-		// env.getProperty("hibernate.hbm2ddl.auto"));
-		// hibernateProperties.setProperty("hibernate.dialect",
-		// env.getProperty("hibernate.dialect"));
-
-		return hibernateProperties;
-	}
 }

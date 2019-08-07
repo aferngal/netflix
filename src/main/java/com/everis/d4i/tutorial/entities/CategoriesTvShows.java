@@ -13,29 +13,27 @@ import javax.persistence.Table;
 
 @Entity
 @Table(name = "CATEGORIES_TV_SHOWS")
-public class CategoriesTvShows implements Serializable  {
+public class CategoriesTvShows implements Serializable {
 
 	private static final long serialVersionUID = -5430076929586129675L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "CATEGORY_ID", nullable = false)
-	// @Column(name = "CHAPTER_ID", unique = true)
 	private Category category;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "TV_SHOW_ID", nullable = false)
-	// @Column(name = "ACTOR_ID", unique = true)
 	private TvShow tvShow;
 
 	public Long getId() {
 		return id;
 	}
 
-	public void setId(Long id) {
+	public void setId(final Long id) {
 		this.id = id;
 	}
 
@@ -43,7 +41,7 @@ public class CategoriesTvShows implements Serializable  {
 		return category;
 	}
 
-	public void setCategory(Category category) {
+	public void setCategory(final Category category) {
 		this.category = category;
 	}
 
@@ -51,8 +49,8 @@ public class CategoriesTvShows implements Serializable  {
 		return tvShow;
 	}
 
-	public void setTvShow(TvShow tvShow) {
+	public void setTvShow(final TvShow tvShow) {
 		this.tvShow = tvShow;
 	}
-	
+
 }

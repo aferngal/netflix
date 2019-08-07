@@ -11,11 +11,12 @@ import com.everis.d4i.tutorial.entities.Actor;
 @Repository
 public interface ActorRepository extends JpaRepository<Actor, Long> {
 
+	@Override
 	Optional<Actor> findById(Long id);
 
 	List<Actor> findByChapterActorChapterSeasonTvShowIdAndChapterActorChapterSeasonNumberAndChapterActorChapterNumber(
 			long tvShowId, short seasonNumber, short chapterNumber);
 
-	List<Actor> findByChapterActorChapter_Id(short chapterId);
+	List<Actor> findByChapterActorChapter_Id(Long chapterId);
 
 }
