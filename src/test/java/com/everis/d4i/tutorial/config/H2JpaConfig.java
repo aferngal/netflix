@@ -43,23 +43,11 @@ public class H2JpaConfig {
 		dataSource.setPassword(env.getProperty("spring.datasource.pass"));
 
 		final Resource initSchema = new ClassPathResource("schema.sql");
-		// final Resource initData = new ClassPathResource("data.sql");
-		// final DatabasePopulator databasePopulator = new
-		// ResourceDatabasePopulator(initSchema, initData);
+
 		final DatabasePopulator databasePopulator = new ResourceDatabasePopulator(initSchema);
 		DatabasePopulatorUtils.execute(databasePopulator, dataSource);
 
 		return dataSource;
-	}
-
-	@Bean
-	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-		final LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
-		em.setDataSource(dataSource());
-		em.setPackagesToScan(new String[] { "com.everis.d4i.tutorial.entities" });
-		em.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
-		em.setJpaProperties(additionalProperties());
-		return em;
 	}
 
 	final Properties additionalProperties() {
@@ -85,6 +73,16 @@ public class H2JpaConfig {
 //		hibernateProperties.setProperty("hibernate.show_sql", env.getProperty("hibernate.show_sql"));
 
 		return hibernateProperties;
+	}
+
+	@Bean
+	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+		final LocalContainerEntityManagerFactoryBean em = new LocalContainerEntityManagerFactoryBean();
+		em.setDataSource(dataSource());
+		em.setPackagesToScan(new String[] { "com.everis.d4i.tutorial.entities" });
+		em.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+		em.setJpaProperties(additionalProperties());
+		return em;
 	}
 
 	@Bean
